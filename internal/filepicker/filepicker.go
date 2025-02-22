@@ -7,9 +7,10 @@ import (
 
 	"github.com/goferwplynie/goXP/config"
 	"github.com/goferwplynie/goXP/internal/models"
+	"path/filepath"
 )
 
-type Model struct {
+type FilePicker struct {
 	Files             []models.File
 	CurrentFolderName string
 	CurrentPath       string
@@ -17,32 +18,61 @@ type Model struct {
 	Selected          int
 }
 
-var conf= config.New()
+var conf = config.New()
 
-func (m *Model) FindFiles() error {
-	files, err := os.ReadDir(m.CurrentPath)
+func New() *FilePicker{
+	return &FilePicker{
+		Files: []models.File{},
+
+
+	}
+}
+
+func (fp *FilePicker) FindFiles() error {
+	files, err := os.ReadDir(fp.CurrentPath)
 
 	if err != nil {
 		return errors.New("Unable to read this directory")
 	}
 
-	if len(files) > conf.MaxFilesToLoadAtStart{
-		for i:=0;i<=conf.MaxFilesToLoadAtStart;i++{
+	if len(files) > conf.MaxFilesToLoadAtStart {
+		for i := 0; i <= conf.MaxFilesToLoadAtStart; i++ {
 			file := files[i]
 			info, err := file.Info()
-			if err != nil{
+			if err != nil {
 				log.Printf("%v: %v", file.Name(), err)
 			}
+
 			fileObj := models.File{
-				Name: info.Name(),
-				Size: info.Size(),
-				Mode: uint32(info.Mode()),
+				Name:    info.Name(),
+				Size:    info.Size(),
+				Mode:    uint32(info.Mode()),
 				ModTime: info.ModTime(),
-				IsDir: info.IsDir(),
+				IsDir:   info.IsDir(),
 			}
 
-			m.Files = append(m.Files, fileObj)
+			fp.Files = append(fp.Files, fileObj)
 		}
+		files = files[conf.MaxFilesToLoadAtStart:]
+
+		go func() {
+			for _, file := range files {
+				info, err := file.Info()
+				if err != nil {
+					log.Printf("%v: %v", file.Name(), err)
+				}
+
+				fileObj := models.File{
+					Name:    info.Name(),
+					Size:    info.Size(),
+					Mode:    uint32(info.Mode()),
+					ModTime: info.ModTime(),
+					IsDir:   info.IsDir(),
+				}
+
+				fp.Files = append(fp.Files, fileObj)
+			}
+		}()
 	}
 
 	return nil

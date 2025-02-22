@@ -5,9 +5,9 @@ type Config struct {
 	MaxFilesToLoadAtStart int
 }
 
-func New() *Config{ 
+func New() *Config {
 	return &Config{
-		Cursor: ">",
+		Cursor:                ">",
 		MaxFilesToLoadAtStart: 100,
 	}
 }
