@@ -3,11 +3,11 @@ package linkedlist_test
 import (
 	"testing"
 
-	models "github.com/goferwplynie/goXP/internal/models/linkedlist"
+	linkedlist "github.com/goferwplynie/goXP/internal/ds/linkedlist"
 )
 
 func TestNewLinkedList(t *testing.T) {
-	ll := models.NewLinkedList[int]()
+	ll := linkedlist.NewLinkedList[int]()
 
 	if ll == nil {
 		t.Error("linekd list not instantiated")
@@ -15,7 +15,7 @@ func TestNewLinkedList(t *testing.T) {
 }
 
 func TestNewNode(t *testing.T) {
-	node := models.NewNode(1)
+	node := linkedlist.NewNode(1)
 
 	if node == nil {
 		t.Error("node not instantiated")
@@ -27,7 +27,7 @@ func TestNewNode(t *testing.T) {
 }
 
 func TestAppendNoError(t *testing.T) {
-	ll := models.NewLinkedList[int]()
+	ll := linkedlist.NewLinkedList[int]()
 
 	err := ll.Append(1)
 	if err != nil {
@@ -36,9 +36,9 @@ func TestAppendNoError(t *testing.T) {
 }
 
 func TestAppendOneValue(t *testing.T) {
-	ll := models.NewLinkedList[int]()
+	ll := linkedlist.NewLinkedList[int]()
 
-	node := models.NewNode(1)
+	node := linkedlist.NewNode(1)
 
 	ll.Append(1)
 
@@ -52,7 +52,7 @@ func TestAppendOneValue(t *testing.T) {
 }
 
 func TestAppendMultipleValues(t *testing.T) {
-	ll := models.NewLinkedList[int]()
+	ll := linkedlist.NewLinkedList[int]()
 
 	ll.Append(1)
 	ll.Append(2)
@@ -71,7 +71,7 @@ func TestAppendMultipleValues(t *testing.T) {
 }
 
 func TestPop(t *testing.T) {
-	ll := models.NewLinkedList[int]()
+	ll := linkedlist.NewLinkedList[int]()
 	ll.Append(1)
 	ll.Append(2)
 
@@ -87,7 +87,7 @@ func TestPop(t *testing.T) {
 }
 
 func TestPopEmptyList(t *testing.T) {
-	ll := models.NewLinkedList[int]()
+	ll := linkedlist.NewLinkedList[int]()
 
 	_, err := ll.Pop()
 
@@ -97,7 +97,7 @@ func TestPopEmptyList(t *testing.T) {
 }
 
 func TestGetIndex(t *testing.T) {
-	ll := models.NewLinkedList[int]()
+	ll := linkedlist.NewLinkedList[int]()
 	ll.Append(1)
 	ll.Append(2)
 	ll.Append(3)
@@ -110,7 +110,7 @@ func TestGetIndex(t *testing.T) {
 }
 
 func TestGetNotExistingIndex(t *testing.T) {
-	ll := models.NewLinkedList[int]()
+	ll := linkedlist.NewLinkedList[int]()
 	ll.Append(1)
 	ll.Append(2)
 	ll.Append(3)
@@ -123,11 +123,23 @@ func TestGetNotExistingIndex(t *testing.T) {
 }
 
 func TestGetIndexFromEmptyList(t *testing.T) {
-	ll := models.NewLinkedList[int]()
+	ll := linkedlist.NewLinkedList[int]()
 
 	_, err := ll.GetByIndex(32)
 
 	if err == nil {
 		t.Error("expected error. cant find in empty list")
+	}
+}
+
+func TestIsEmpty(t *testing.T) {
+	ll := linkedlist.NewLinkedList[int]()
+
+	if ll.IsEmpty() != true {
+		t.Error("empty list should return true")
+	}
+	ll.Append(1)
+	if ll.IsEmpty() != false {
+		t.Error("not empty list should return false")
 	}
 }

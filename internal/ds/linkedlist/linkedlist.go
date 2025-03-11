@@ -83,6 +83,13 @@ func (ll *LinkedList[T]) GetByIndex(index int) (value T, err error) {
 	return currentNode.Value, nil
 }
 
+func (ll *LinkedList[T]) IsEmpty() bool {
+	if ll.Head == nil {
+		return true
+	}
+	return false
+}
+
 type Node[T any] struct {
 	Value T
 	Next  *Node[T]
