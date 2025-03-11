@@ -8,6 +8,6 @@ type Config struct {
 func New() *Config {
 	return &Config{
 		Cursor:                ">",
-		MaxFilesToLoadAtStart: 100,
+		MaxFilesToLoadAtStart: 1,
 	}
 }
