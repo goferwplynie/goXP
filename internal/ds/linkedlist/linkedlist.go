@@ -90,6 +90,19 @@ func (ll LinkedList[T]) IsEmpty() bool {
 	return false
 }
 
+func (l *LinkedList[T]) Range() <-chan T {
+	ch := make(chan T)
+
+	go func() {
+		for node := l.Head; node != nil; node = node.Next {
+			ch <- node.Value
+		}
+		close(ch)
+	}()
+
+	return ch
+}
+
 type Node[T any] struct {
 	Value T
 	Next  *Node[T]

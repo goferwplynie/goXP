@@ -37,6 +37,7 @@ type Model struct {
 	ShowMode    bool
 	ShowModTime bool
 	ShowContent bool
+	Cache       map[string][]os.DirEntry
 }
 
 func DefaultKeyBinds() KeyBinds {
@@ -67,6 +68,7 @@ func New() Model {
 		ShowMode:    true,
 		ShowModTime: true,
 		ShowContent: true,
+		Cache:       map[string][]os.DirEntry{},
 	}
 }
 
@@ -81,4 +83,25 @@ func SetupPath() *linkedlist.LinkedList[string] {
 		ll.Append(v)
 	}
 	return ll
+}
+
+func (m Model) JoinPath() (path string) {
+	dirStack := m.CurrentDir
+	path = ""
+
+	for v := range dirStack.Range() {
+		path = path + v + string(filepath.Separator)
+	}
+	return path
+}
+
+func (m Model) ReadDir() (files []os.DirEntry, err error) {
+	path := m.JoinPath()
+	for k, _ := range m.Cache {
+		if k == path {
+			return m.Cache[k], nil
+		}
+	}
+	files, err = os.ReadDir(path)
+	return files, err
 }
