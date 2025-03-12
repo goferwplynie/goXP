@@ -1,13 +1,11 @@
 package config
 
 type Config struct {
-	Cursor                string
-	MaxFilesToLoadAtStart int
+	Cursor string
 }
 
 func New() *Config {
 	return &Config{
-		Cursor:                ">",
-		MaxFilesToLoadAtStart: 1,
+		Cursor: ">",
 	}
 }

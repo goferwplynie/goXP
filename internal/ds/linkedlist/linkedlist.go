@@ -1,4 +1,4 @@
-package models
+package linkedlist
 
 import (
 	"errors"
@@ -83,7 +83,7 @@ func (ll *LinkedList[T]) GetByIndex(index int) (value T, err error) {
 	return currentNode.Value, nil
 }
 
-func (ll *LinkedList[T]) IsEmpty() bool {
+func (ll LinkedList[T]) IsEmpty() bool {
 	if ll.Head == nil {
 		return true
 	}

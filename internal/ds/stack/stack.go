@@ -1,7 +1,7 @@
 package stack
 
 type Stack[T any] interface {
-	Push(value T)
+	Append(value T) error
 	Pop() (value T, err error)
 	IsEmpty() bool
 }
