@@ -8,6 +8,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/goferwplynie/goXP/internal/ds/linkedlist"
 	"github.com/goferwplynie/goXP/internal/ds/stack"
 )
@@ -40,6 +41,19 @@ type Model struct {
 	ShowModTime bool
 	ShowContent bool
 	Cache       map[string][]os.DirEntry
+	Styles      FilePickerStyle
+}
+
+type FilePickerStyle struct {
+	CurrentFile  lipgloss.Style
+	DefaultFile  lipgloss.Style
+	Folder       lipgloss.Style
+	CurrentPath  lipgloss.Style
+	ModeStyle    lipgloss.Style
+	ModTimeStyle lipgloss.Style
+	SizeStyle    lipgloss.Style
+	Selected     lipgloss.Style
+	CursorStyle  lipgloss.Style
 }
 
 type readDirMsg struct {
@@ -84,13 +98,13 @@ func New() Model {
 		CurrentDir:  SetupPath(),
 		ShowSize:    true,
 		ShowMode:    true,
-		ShowModTime: true,
+		ShowModTime: false,
 		ShowContent: true,
 		Cache:       make(map[string][]os.DirEntry),
 	}
 }
 
-func SetupPath() *linkedlist.LinkedList[string] {
+func SetupPath() stack.Stack[string] {
 	ll := linkedlist.NewLinkedList[string]()
 	path, err := os.Getwd()
 	if err != nil {
@@ -116,10 +130,9 @@ func (m Model) JoinPath() (path string) {
 func (m *Model) ReadDir() tea.Cmd {
 	return func() tea.Msg {
 		path := m.JoinPath()
-		for k, _ := range m.Cache {
-			if k == path {
-				return newReadDirMsg(m.Cache[k], nil)
-			}
+		_, exists := m.Cache[path]
+		if exists {
+			return newReadDirMsg(m.Cache[path], nil)
 		}
 		files, err := os.ReadDir(path)
 		m.Files = files
@@ -178,15 +191,27 @@ func (m Model) View() string {
 	s += m.JoinPath() + "\n"
 
 	for i, v := range m.Files {
+		info, err := v.Info()
+		if err != nil {
+			break
+		}
 		if i == m.CursorPos {
 			s += fmt.Sprintf("%s  ", m.Cursor)
 		} else {
 			s += fmt.Sprintf("%v. ", i)
-
 		}
 		s += fmt.Sprintf("%s", v.Name())
 		if v.IsDir() {
 			s += string(filepath.Separator)
+		}
+		if m.ShowMode {
+			s += fmt.Sprintf(" %v ", info.Mode())
+		}
+		if m.ShowModTime {
+			s += fmt.Sprintf(" %v ", info.ModTime())
+		}
+		if m.ShowSize {
+			s += fmt.Sprintf(" %v ", info.Size())
 		}
 		s += "\n"
 	}
