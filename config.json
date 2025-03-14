@@ -1,0 +1,97 @@
+{
+    "file_picker_config":{
+        "cursor": ">",
+        "show_size": true,
+        "show_mode":true,
+        "show_mod_time": false,
+        "show_content": true,
+        "keybinds":{
+            "up": ["k", "up"],
+            "down": ["j", "down"],
+            "back": ["h", "left", "esc"],
+            "enter": ["enter", "right", "l"],
+            "select_mode": ["V"],
+            "select_one": ["v"]
+        },
+        "styles":{
+            "current_file":{
+                "foreground_color":"#000000",
+                "background_color": "#f0f1f2",
+                "padding": [8],
+                "margin": [2],
+                "bold": true,
+                "border":{
+                    "top":false,
+                    "right":false,
+                    "bottom":false,
+                    "left":false
+                },
+            "default_file":{
+                "foreground_color":"#f0f1f2",
+                "padding": [2],
+                "margin": [2],
+                "border":{
+                    "top":false,
+                    "right":false,
+                    "bottom":false,
+                    "left":false
+                }
+            },
+            "folder":{
+                "foreground_color":"#f0f1f2",
+                "padding": [2],
+                "margin": [2],
+                "border":{
+                    "top":false,
+                    "right":false,
+                    "bottom":false,
+                    "left":false
+                }
+            },
+            "current_path":{
+                "foreground_color":"#cf34c7",
+                "padding": [2],
+                "margin": [2],
+                "bold": true,
+                "border":{
+                    "top":false,
+                    "right":false,
+                    "bottom":false,
+                    "left":false
+                }
+            },
+            "mode_style":{
+                "foreground_color":"#cf3443",
+                "margin": [0,2,0,2],
+                "border":{
+                    "top":false,
+                    "right":false,
+                    "bottom":false,
+                    "left":false
+                }
+            },
+            "SizeStyle":{
+                "foreground_color":"#3460cf",
+                "margin": [0,2,0,2],
+                "border":{
+                    "top":false,
+                    "right":false,
+                    "bottom":false,
+                    "left":false
+                }
+            },
+            "Selected":{
+                "foreground_color":"#000000",
+                "background_color":"#c7c8c9",
+                "margin": [0,2,0,2],
+                "border":{
+                    "top":false,
+                    "right":false,
+                    "bottom":false,
+                    "left":false
+                }
+            }
+        }
+    }
+}
+}

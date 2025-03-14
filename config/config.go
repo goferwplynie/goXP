@@ -5,11 +5,13 @@ type Config struct {
 }
 
 type FilePickerConfig struct {
-	Cursor      string `json:"cursor,omitempty"`
-	ShowSize    bool   `json:"show_size,omitempty"`
-	ShowMode    bool   `json:"show_mode,omitempty"`
-	ShowModTime bool   `json:"show_mod_time,omitempty"`
-	ShowContent bool   `json:"show_content,omitempty"`
+	Cursor      string             `json:"cursor,omitempty"`
+	ShowSize    bool               `json:"show_size,omitempty"`
+	ShowMode    bool               `json:"show_mode,omitempty"`
+	ShowModTime bool               `json:"show_mod_time,omitempty"`
+	ShowContent bool               `json:"show_content,omitempty"`
+	Keybinds    FilePickerKeybinds `json:"keybinds,omitempty"`
+	Styles      FilePickerStyles   `json:"styles,omitempty"`
 }
 
 type FilePickerKeybinds struct {
