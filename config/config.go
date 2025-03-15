@@ -36,12 +36,15 @@ type FilePickerStyles struct {
 }
 
 type StyleConfig struct {
+	Align           []string     `json:"align,omitempty"`
+	Width           int          `json:"width,omitempty"`
+	Height          int          `json:"height,omitempty"`
 	ForegroundColor string       `json:"foreground_color,omitempty"`
 	BackgroundColor string       `json:"background_color,omitempty"`
 	Border          BorderConfig `json:"border,omitempty"`
 	Padding         []int        `json:"padding,omitempty"`
 	Margin          []int        `json:"margin,omitempty"`
-	Bold            bool
+	Bold            bool         `json:"bold,omitempty"`
 }
 
 type BorderConfig struct {

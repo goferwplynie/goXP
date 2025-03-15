@@ -34,6 +34,7 @@ func Setup() tea.Model {
 	fp.ReadDir()()
 	fpStyles := conf.FilePickerConfig.Styles
 	fp.Styles = filepicker.CustomStyle(fpStyles)
+	fp.Keybinds = filepicker.CustomKeybinds(conf.FilePickerConfig.Keybinds)
 
 	return fp
 }

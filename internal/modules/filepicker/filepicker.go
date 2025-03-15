@@ -88,15 +88,15 @@ func CustomStyle(fpStyles config.FilePickerStyles) FilePickerStyle {
 
 }
 
-func DefaultKeyBinds() KeyBinds {
+func CustomKeybinds(c config.FilePickerKeybinds) KeyBinds {
 	return KeyBinds{
-		Up:         key.NewBinding(key.WithKeys("k", "up")),
-		Down:       key.NewBinding(key.WithKeys("j", "down")),
-		Back:       key.NewBinding(key.WithKeys("h", "left")),
+		Up:         key.NewBinding(key.WithKeys(c.Up...)),
+		Down:       key.NewBinding(key.WithKeys(c.Down...)),
+		Back:       key.NewBinding(key.WithKeys(c.Back...)),
 		CmdMode:    key.NewBinding(key.WithKeys(":", "/")),
-		SelectMode: key.NewBinding(key.WithKeys("V")),
-		SelectOne:  key.NewBinding(key.WithKeys("v")),
-		Enter:      key.NewBinding(key.WithKeys("l", "enter")),
+		SelectMode: key.NewBinding(key.WithKeys(c.SelectMode...)),
+		SelectOne:  key.NewBinding(key.WithKeys(c.SelectOne...)),
+		Enter:      key.NewBinding(key.WithKeys(c.Enter...)),
 		Delete:     key.NewBinding(key.WithKeys("d", "backspace")),
 		Add:        key.NewBinding(key.WithKeys("a", "n")),
 		AddDir:     key.NewBinding(key.WithKeys("A", "N")),
@@ -109,8 +109,6 @@ func DefaultKeyBinds() KeyBinds {
 func New() Model {
 	return Model{
 		Files:       nil,
-		Keybinds:    DefaultKeyBinds(),
-		Cursor:      ">",
 		CursorPos:   0,
 		CurrentDir:  SetupPath(),
 		ShowSize:    true,
@@ -208,6 +206,7 @@ func (m Model) View() string {
 	s += m.Styles.CurrentPath.Render(m.JoinPath()) + "\n"
 
 	for i, v := range m.Files {
+		var filename string
 		row := ""
 		info, err := v.Info()
 		if err != nil {
@@ -216,14 +215,17 @@ func (m Model) View() string {
 		if i == m.CursorPos {
 			row += fmt.Sprintf("%s  ", m.Cursor)
 		} else {
-			row += fmt.Sprintf("%v. ", i)
+			row += fmt.Sprintf("%-4v ", fmt.Sprintf("%v.", i))
 		}
-		row += fmt.Sprintf("%s", v.Name())
 		if v.IsDir() {
-			row += string(filepath.Separator)
+			filename = v.Name() + string(filepath.Separator)
+		} else {
+			filename = v.Name()
 		}
+		row += fmt.Sprintf("%-20s", filename)
+
 		if m.ShowMode {
-			row += m.Styles.ModeStyle.Render(fmt.Sprintf(" %v ", info.Mode()))
+			row += m.Styles.ModeStyle.Render(fmt.Sprintf(" %-10v ", info.Mode()))
 		}
 		if m.ShowModTime {
 			row += m.Styles.ModTimeStyle.Render(fmt.Sprintf(" %v ", info.ModTime()))

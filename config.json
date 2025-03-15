@@ -34,6 +34,8 @@
         "styles": {
             "current_file": {
                 "foreground_color": "#000000",
+                "background_color": "#f0f1f2",
+                "width": 75,
                 "padding": [
                     1
                 ],
@@ -47,6 +49,7 @@
             },
             "default_file": {
                 "foreground_color": "#f0f1f2",
+                "width": 75,
                 "border": {
                     "top": false,
                     "right": false,
@@ -85,7 +88,7 @@
                     "left": false
                 }
             },
-            "SizeStyle": {
+            "size_style": {
                 "foreground_color": "#3460cf",
                 "border": {
                     "top": false,
@@ -94,7 +97,7 @@
                     "left": false
                 }
             },
-            "Selected": {
+            "selected": {
                 "foreground_color": "#000000",
                 "background_color": "#c7c8c9",
                 "border": {
