@@ -4,9 +4,14 @@ import (
 	"fmt"
 	"os"
 
+	"sync"
+
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/goferwplynie/goXP/config"
 	"github.com/goferwplynie/goXP/internal/modules/filepicker"
 )
+
+var wg sync.WaitGroup
 
 func main() {
 	fp := Setup()
@@ -18,9 +23,17 @@ func main() {
 }
 
 func Setup() tea.Model {
+	// confCh := make(chan config.Config)
+	// go func(c chan config.Config) {
+	// 	defer wg.Done()
+	// 	c <- conf
+	// }(confCh)
+	conf := config.ConfigLoader()
 	fp := filepicker.New()
 	fp.CurrentDir = filepicker.SetupPath()
 	fp.ReadDir()()
+	fpStyles := conf.FilePickerConfig.Styles
+	fp.Styles = filepicker.CustomStyle(fpStyles)
 
 	return fp
 }

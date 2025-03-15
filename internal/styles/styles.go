@@ -13,7 +13,7 @@ func BuildStyle(s config.StyleConfig) lipgloss.Style {
 		style = style.Foreground(lipgloss.Color(s.ForegroundColor))
 	}
 	if s.BackgroundColor != "" {
-		style = style.Foreground(lipgloss.Color(s.ForegroundColor))
+		style = style.Background(lipgloss.Color(s.ForegroundColor))
 	}
 
 	if s.Border != borderZeroValue {

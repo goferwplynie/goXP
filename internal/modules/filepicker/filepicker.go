@@ -9,8 +9,10 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/goferwplynie/goXP/config"
 	"github.com/goferwplynie/goXP/internal/ds/linkedlist"
 	"github.com/goferwplynie/goXP/internal/ds/stack"
+	"github.com/goferwplynie/goXP/internal/styles"
 )
 
 type KeyBinds struct {
@@ -69,6 +71,21 @@ func newReadDirMsg(files []os.DirEntry, err error) tea.Msg {
 		Files: files,
 		err:   err,
 	}
+}
+
+func CustomStyle(fpStyles config.FilePickerStyles) FilePickerStyle {
+	return FilePickerStyle{
+		CurrentFile:  styles.BuildStyle(fpStyles.CurrentFile),
+		DefaultFile:  styles.BuildStyle(fpStyles.DefaultFile),
+		Folder:       styles.BuildStyle(fpStyles.Folder),
+		CurrentPath:  styles.BuildStyle(fpStyles.CurrentPath),
+		ModeStyle:    styles.BuildStyle(fpStyles.ModeStyle),
+		ModTimeStyle: styles.BuildStyle(fpStyles.ModTimeStyle),
+		SizeStyle:    styles.BuildStyle(fpStyles.SizeStyle),
+		Selected:     styles.BuildStyle(fpStyles.Selected),
+		CursorStyle:  styles.BuildStyle(fpStyles.CursorStyle),
+	}
+
 }
 
 func DefaultKeyBinds() KeyBinds {
@@ -188,32 +205,43 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m Model) View() string {
 	s := ""
-	s += m.JoinPath() + "\n"
+	s += m.Styles.CurrentPath.Render(m.JoinPath()) + "\n"
 
 	for i, v := range m.Files {
+		row := ""
 		info, err := v.Info()
 		if err != nil {
 			break
 		}
 		if i == m.CursorPos {
-			s += fmt.Sprintf("%s  ", m.Cursor)
+			row += fmt.Sprintf("%s  ", m.Cursor)
 		} else {
-			s += fmt.Sprintf("%v. ", i)
+			row += fmt.Sprintf("%v. ", i)
 		}
-		s += fmt.Sprintf("%s", v.Name())
+		row += fmt.Sprintf("%s", v.Name())
 		if v.IsDir() {
-			s += string(filepath.Separator)
+			row += string(filepath.Separator)
 		}
 		if m.ShowMode {
-			s += fmt.Sprintf(" %v ", info.Mode())
+			row += m.Styles.ModeStyle.Render(fmt.Sprintf(" %v ", info.Mode()))
 		}
 		if m.ShowModTime {
-			s += fmt.Sprintf(" %v ", info.ModTime())
+			row += m.Styles.ModTimeStyle.Render(fmt.Sprintf(" %v ", info.ModTime()))
 		}
 		if m.ShowSize {
-			s += fmt.Sprintf(" %v ", info.Size())
+			row += m.Styles.SizeStyle.Render(fmt.Sprintf(" %v ", info.Size()))
 		}
-		s += "\n"
+
+		if i != m.CursorPos {
+			row = m.Styles.DefaultFile.Render(row)
+		}
+		if v.IsDir() {
+			row = m.Styles.Folder.Render(row)
+		}
+		if i == m.CursorPos {
+			row = m.Styles.CurrentFile.Render(row)
+		}
+		s += fmt.Sprintf("%s\n", row)
 	}
 
 	return s
