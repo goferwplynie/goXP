@@ -36,7 +36,7 @@ type Model struct {
 	Keybinds    KeyBinds
 	Cursor      string
 	CursorPos   int
-	Selected    []int
+	Selected    []os.DirEntry
 	CurrentDir  stack.Stack[string]
 	ShowSize    bool
 	ShowMode    bool
@@ -108,7 +108,6 @@ func CustomKeybinds(c config.FilePickerKeybinds) KeyBinds {
 
 func New() Model {
 	return Model{
-		Files:       nil,
 		CursorPos:   0,
 		CurrentDir:  SetupPath(),
 		ShowSize:    true,
