@@ -40,7 +40,7 @@ func (m *Model) GetCache() map[string][]os.DirEntry {
 	return m.Cache
 }
 
-// users can make their own sort
+// users can make their own sort or filter files
 func (m *Model) OverwriteFiles(files []os.DirEntry) {
 	m.Files = files
 }
@@ -55,10 +55,15 @@ func (m *Model) DeleteFiles(file string) bool {
 	return true
 }
 
-func (m *Model) RenameFile(file string, newName string) {
+func (m *Model) RenameFile(file string, newName string) bool {
 	path := m.GetCurrentDir() + file
 	newPath := m.GetCurrentDir() + newName
-	os.Rename(path, newPath)
+	err := os.Rename(path, newPath)
+	if err != nil {
+		return false
+	}
+
+	return true
 }
 
 func MoveFile(src, dst string) bool {
