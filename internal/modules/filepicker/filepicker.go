@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -44,6 +45,7 @@ type Model struct {
 	ShowContent bool
 	Cache       map[string][]os.DirEntry
 	Styles      FilePickerStyle
+	Mode        string
 }
 
 type FilePickerStyle struct {
@@ -190,11 +192,22 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				break
 			} else {
 				m.CurrentDir.Append(currentFile.Name())
+				m.Selected = []os.DirEntry{}
 				return m, m.ReadDir()
 			}
 		case key.Matches(msg, m.Keybinds.Back):
 			m.CurrentDir.Pop()
 			return m, m.ReadDir()
+		case key.Matches(msg, m.Keybinds.SelectOne):
+			if slices.Contains(m.Selected, m.Files[m.CursorPos]) {
+				for i, v := range m.Selected {
+					if v == m.Files[m.CursorPos] {
+						m.Selected = append(m.Selected[:i], m.Selected[i+1:]...)
+					}
+				}
+			} else {
+				m.Selected = append(m.Selected, m.Files[m.CursorPos])
+			}
 		}
 	}
 	return m, nil
@@ -238,6 +251,9 @@ func (m Model) View() string {
 		}
 		if v.IsDir() {
 			row = m.Styles.Folder.Render(row)
+		}
+		if slices.Contains(m.Selected, v) {
+			row = m.Styles.Selected.Render(row)
 		}
 		if i == m.CursorPos {
 			row = m.Styles.CurrentFile.Render(row)
