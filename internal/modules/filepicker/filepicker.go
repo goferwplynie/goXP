@@ -17,19 +17,20 @@ import (
 )
 
 type KeyBinds struct {
-	Up         key.Binding
-	Down       key.Binding
-	Back       key.Binding
-	CmdMode    key.Binding
-	SelectMode key.Binding
-	SelectOne  key.Binding
-	Enter      key.Binding
-	Delete     key.Binding
-	Add        key.Binding
-	AddDir     key.Binding
-	Rename     key.Binding
-	Undo       key.Binding
-	Redo       key.Binding
+	Up              key.Binding
+	Down            key.Binding
+	Back            key.Binding
+	CmdMode         key.Binding
+	CancelSelection key.Binding
+	SelectMode      key.Binding
+	SelectOne       key.Binding
+	Enter           key.Binding
+	Delete          key.Binding
+	Add             key.Binding
+	AddDir          key.Binding
+	Rename          key.Binding
+	Undo            key.Binding
+	Redo            key.Binding
 }
 
 type Model struct {
@@ -45,7 +46,7 @@ type Model struct {
 	ShowContent bool
 	Cache       map[string][]os.DirEntry
 	Styles      FilePickerStyle
-	Mode        string
+	SelectMode  bool
 }
 
 type FilePickerStyle struct {
@@ -92,19 +93,20 @@ func CustomStyle(fpStyles config.FilePickerStyles) FilePickerStyle {
 
 func CustomKeybinds(c config.FilePickerKeybinds) KeyBinds {
 	return KeyBinds{
-		Up:         key.NewBinding(key.WithKeys(c.Up...)),
-		Down:       key.NewBinding(key.WithKeys(c.Down...)),
-		Back:       key.NewBinding(key.WithKeys(c.Back...)),
-		CmdMode:    key.NewBinding(key.WithKeys(":", "/")),
-		SelectMode: key.NewBinding(key.WithKeys(c.SelectMode...)),
-		SelectOne:  key.NewBinding(key.WithKeys(c.SelectOne...)),
-		Enter:      key.NewBinding(key.WithKeys(c.Enter...)),
-		Delete:     key.NewBinding(key.WithKeys("d", "backspace")),
-		Add:        key.NewBinding(key.WithKeys("a", "n")),
-		AddDir:     key.NewBinding(key.WithKeys("A", "N")),
-		Rename:     key.NewBinding(key.WithKeys("r")),
-		Undo:       key.NewBinding(key.WithKeys("u", "ctrl+z")),
-		Redo:       key.NewBinding(key.WithKeys("ctrl+r", "ctrl+y", "ctrl+Z")),
+		Up:              key.NewBinding(key.WithKeys(c.Up...)),
+		Down:            key.NewBinding(key.WithKeys(c.Down...)),
+		Back:            key.NewBinding(key.WithKeys(c.Back...)),
+		CmdMode:         key.NewBinding(key.WithKeys(":", "/")),
+		SelectMode:      key.NewBinding(key.WithKeys(c.SelectMode...)),
+		SelectOne:       key.NewBinding(key.WithKeys(c.SelectOne...)),
+		CancelSelection: key.NewBinding(key.WithKeys("esc")),
+		Enter:           key.NewBinding(key.WithKeys(c.Enter...)),
+		Delete:          key.NewBinding(key.WithKeys("d", "backspace")),
+		Add:             key.NewBinding(key.WithKeys("a", "n")),
+		AddDir:          key.NewBinding(key.WithKeys("A", "N")),
+		Rename:          key.NewBinding(key.WithKeys("r")),
+		Undo:            key.NewBinding(key.WithKeys("u", "ctrl+z")),
+		Redo:            key.NewBinding(key.WithKeys("ctrl+r", "ctrl+y", "ctrl+Z")),
 	}
 }
 
@@ -160,6 +162,18 @@ func (m *Model) ReadDir() tea.Cmd {
 	}
 }
 
+func (m *Model) HandleSelection(cursorPos int) {
+	if slices.Contains(m.Selected, m.Files[cursorPos]) {
+		for i, v := range m.Selected {
+			if v == m.Files[m.CursorPos] {
+				m.Selected = append(m.Selected[:i], m.Selected[i+1:]...)
+			}
+		}
+	} else {
+		m.Selected = append(m.Selected, m.Files[cursorPos])
+	}
+}
+
 func (m Model) Init() tea.Cmd {
 	return m.ReadDir()
 }
@@ -174,17 +188,24 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.Files = msg.Files
 	case tea.KeyMsg:
 		switch {
+		//TODO: fix select mode
 		case key.Matches(msg, m.Keybinds.Down):
 			if m.CursorPos >= len(m.Files)-1 {
 				break
 			} else {
-				m.CursorPos += 1
+				if m.SelectMode {
+					m.HandleSelection(m.CursorPos)
+				}
+				m.CursorPos++
 			}
 		case key.Matches(msg, m.Keybinds.Up):
 			if m.CursorPos < 1 {
 				break
 			} else {
-				m.CursorPos -= 1
+				if m.SelectMode {
+					m.HandleSelection(m.CursorPos)
+				}
+				m.CursorPos--
 			}
 		case key.Matches(msg, m.Keybinds.Enter):
 			currentFile := m.Files[m.CursorPos]
@@ -199,15 +220,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.CurrentDir.Pop()
 			return m, m.ReadDir()
 		case key.Matches(msg, m.Keybinds.SelectOne):
-			if slices.Contains(m.Selected, m.Files[m.CursorPos]) {
-				for i, v := range m.Selected {
-					if v == m.Files[m.CursorPos] {
-						m.Selected = append(m.Selected[:i], m.Selected[i+1:]...)
-					}
-				}
-			} else {
-				m.Selected = append(m.Selected, m.Files[m.CursorPos])
-			}
+			m.HandleSelection(m.CursorPos)
+		case key.Matches(msg, m.Keybinds.SelectMode):
+			m.SelectMode = !m.SelectMode
+		case key.Matches(msg, m.Keybinds.CancelSelection) && m.SelectMode:
+			m.SelectMode = false
+			m.Selected = []os.DirEntry{}
 		}
 	}
 	return m, nil
@@ -246,18 +264,21 @@ func (m Model) View() string {
 			row += m.Styles.SizeStyle.Render(fmt.Sprintf(" %v ", info.Size()))
 		}
 
-		if i != m.CursorPos {
-			row = m.Styles.DefaultFile.Render(row)
-		}
-		if v.IsDir() {
-			row = m.Styles.Folder.Render(row)
-		}
-		if slices.Contains(m.Selected, v) {
-			row = m.Styles.Selected.Render(row)
-		}
-		if i == m.CursorPos {
+		switch {
+		case i == m.CursorPos:
 			row = m.Styles.CurrentFile.Render(row)
+			break
+		case slices.Contains(m.Selected, v):
+			row = m.Styles.Selected.Render(row)
+			break
+		case v.IsDir():
+			row = m.Styles.Folder.Render(row)
+			break
+		default:
+			row = m.Styles.DefaultFile.Render(row)
+			break
 		}
+
 		s += fmt.Sprintf("%s\n", row)
 	}
 

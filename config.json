@@ -16,8 +16,7 @@
             ],
             "back": [
                 "h",
-                "left",
-                "esc"
+                "left"
             ],
             "enter": [
                 "enter",
@@ -32,21 +31,6 @@
             ]
         },
         "styles": {
-            "current_file": {
-                "foreground_color": "#000000",
-                "background_color": "#f0f1f2",
-                "width": 75,
-                "padding": [
-                    1
-                ],
-                "bold": true,
-                "border": {
-                    "top": false,
-                    "right": false,
-                    "bottom": false,
-                    "left": false
-                }
-            },
             "default_file": {
                 "foreground_color": "#f0f1f2",
                 "width": 75,
