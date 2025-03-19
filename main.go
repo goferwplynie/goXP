@@ -8,6 +8,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/goferwplynie/goXP/config"
+	"github.com/goferwplynie/goXP/internal/modules/cmdline"
 	"github.com/goferwplynie/goXP/internal/modules/filepicker"
 )
 
@@ -23,11 +24,6 @@ func main() {
 }
 
 func Setup() tea.Model {
-	// confCh := make(chan config.Config)
-	// go func(c chan config.Config) {
-	// 	defer wg.Done()
-	// 	c <- conf
-	// }(confCh)
 	conf := config.ConfigLoader()
 	fp := filepicker.New()
 	fp.CurrentDir = filepicker.SetupPath()
@@ -36,5 +32,7 @@ func Setup() tea.Model {
 	fp.Styles = filepicker.CustomStyle(fpStyles)
 	fp.Keybinds = filepicker.CustomKeybinds(conf.FilePickerConfig.Keybinds)
 
-	return fp
+	cmd := cmdline.New()
+
+	return cmd
 }
