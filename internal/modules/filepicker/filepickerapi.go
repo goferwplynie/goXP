@@ -45,7 +45,7 @@ func (m *Model) OverwriteFiles(files []os.DirEntry) {
 	m.Files = files
 }
 
-func (m *Model) DeleteFiles(file string) bool {
+func (m *Model) DeleteFile(file string) bool {
 	currentPath := m.GetCurrentDir()
 	filePath := currentPath + file
 	err := os.Remove(filePath)

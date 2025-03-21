@@ -1,9 +1,12 @@
 package cmdline
 
 import (
+	"errors"
+
 	"github.com/charmbracelet/bubbles/cursor"
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/goferwplynie/goXP/internal/modules/filepicker"
 )
 
 type Model struct {
@@ -21,6 +24,27 @@ type KeyBinds struct {
 	DeleteCharacter key.Binding
 	MoveForward     key.Binding
 	MoveBackward    key.Binding
+}
+
+type CommandFunc func(args []string, m filepicker.Model) error
+
+func deleteFile(args []string, m filepicker.Model) error {
+	if len(args) > 0 {
+		if m.DeleteFile(args[0]) {
+			return nil
+		} else {
+			return errors.New("error deleting file")
+		}
+	} else if len(m.GetSelected()) > 0 {
+		for _, v := range m.GetSelected() {
+			if m.DeleteFile(v.Name()) {
+				return nil
+			} else {
+				return errors.New("error deleting file")
+			}
+		}
+	}
+	return errors.New("error deleting file")
 }
 
 func New() Model {
