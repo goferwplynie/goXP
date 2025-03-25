@@ -14,6 +14,8 @@ import (
 
 var wg sync.WaitGroup
 
+//test czy git dziala
+
 func main() {
 	fp := Setup()
 	p := tea.NewProgram(fp)
