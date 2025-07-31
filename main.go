@@ -33,6 +33,6 @@ func Setup() tea.Model {
 	fp.Keybinds = filepicker.CustomKeybinds(conf.FilePickerConfig.Keybinds)
 
 	cmd := cmdline.New()
-
+	//to test filepicker just return fp
 	return cmd
 }
