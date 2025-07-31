@@ -1,0 +1,5 @@
+package cmdline
+
+func quit() {
+
+}

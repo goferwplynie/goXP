@@ -10,6 +10,7 @@ import (
 	"github.com/goferwplynie/goXP/config"
 	"github.com/goferwplynie/goXP/internal/modules/cmdline"
 	"github.com/goferwplynie/goXP/internal/modules/filepicker"
+	mainmodel "github.com/goferwplynie/goXP/internal/modules/mainModel"
 )
 
 var wg sync.WaitGroup
@@ -32,7 +33,8 @@ func Setup() tea.Model {
 	fp.Styles = filepicker.CustomStyle(fpStyles)
 	fp.Keybinds = filepicker.CustomKeybinds(conf.FilePickerConfig.Keybinds)
 
-	cmd := cmdline.New()
-	//to test filepicker just return fp
-	return cmd
+	cmd := cmdline.New(filepicker.FilePickerApi(&fp))
+
+	mainModel := mainmodel.New(fp, cmd)
+	return mainModel
 }

@@ -1,8 +1,6 @@
 package cmdline
 
 import (
-	"errors"
-
 	"github.com/charmbracelet/bubbles/cursor"
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
@@ -16,6 +14,8 @@ type Model struct {
 	value       []rune
 	cursor      cursor.Model
 	Keybinds    KeyBinds
+	Commands    CommandRegistry
+	FpAPI       filepicker.FilePickerApi
 }
 
 type KeyBinds struct {
@@ -26,37 +26,16 @@ type KeyBinds struct {
 	MoveBackward    key.Binding
 }
 
-type CommandFunc func(args []string, m filepicker.Model) error
-
-func deleteFile(args []string, m filepicker.Model) error {
-	if len(args) > 0 {
-		if m.DeleteFile(args[0]) {
-			return nil
-		} else {
-			return errors.New("error deleting file")
-		}
-	} else if len(m.GetSelected()) > 0 {
-		for _, v := range m.GetSelected() {
-			if m.DeleteFile(v.Name()) {
-				return nil
-			} else {
-				return errors.New("error deleting file")
-			}
-		}
-	}
-	return errors.New("error deleting file")
-}
-
-func New() Model {
+func New(fp filepicker.FilePickerApi) Model {
 	return Model{
 		cursor:   cursor.New(),
 		Keybinds: GetKeybinds(),
+		FpAPI:    fp,
 	}
 }
 
 func GetKeybinds() KeyBinds {
 	return KeyBinds{
-		Quit:            key.NewBinding(key.WithKeys("esc")),
 		EnterCommand:    key.NewBinding(key.WithKeys("enter")),
 		DeleteCharacter: key.NewBinding(key.WithKeys("backspace")),
 		MoveForward:     key.NewBinding(key.WithKeys("right")),
@@ -66,12 +45,10 @@ func GetKeybinds() KeyBinds {
 
 func (m *Model) readRunes(msg tea.KeyMsg) {
 	//crazy work
-	m.value = append(m.value[:m.cursorPos], append(msg.Runes, m.value[m.cursorPos:]...)...)
-	m.cursorPos++
-}
-
-func handleCommand(command string) {
-
+	if len(msg.Runes) > 0 {
+		m.value = append(m.value[:m.cursorPos], append(msg.Runes, m.value[m.cursorPos:]...)...)
+		m.cursorPos++
+	}
 }
 
 func (m Model) Init() tea.Cmd {
@@ -82,10 +59,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
-		case key.Matches(msg, m.Keybinds.Quit):
-			break
 		case key.Matches(msg, m.Keybinds.EnterCommand):
-			handleCommand(string(m.value))
+			return m, nil
 		case key.Matches(msg, m.Keybinds.DeleteCharacter):
 			if len(m.value) > 0 {
 				m.value = append(m.value[:m.cursorPos-1], m.value[m.cursorPos:]...)

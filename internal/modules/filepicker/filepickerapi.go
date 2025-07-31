@@ -6,6 +6,22 @@ import (
 	"regexp"
 )
 
+type FilePickerApi interface {
+	GetFiles() []os.DirEntry
+	GetSelected() []os.DirEntry
+	Search(regex string) []os.DirEntry
+	GetCurrentDir() string
+	GetCache() map[string][]os.DirEntry
+	RenameFile(file string, newName string) bool
+	DeleteFile(file string) bool
+	OverwriteFiles(files []os.DirEntry)
+	SetDirectory(dir string)
+}
+
+func (m *Model) SetDirectory(dir string) {
+
+}
+
 func (m *Model) GetFiles() []os.DirEntry {
 	return m.Files
 }

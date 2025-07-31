@@ -34,21 +34,9 @@
             "default_file": {
                 "foreground_color": "#f0f1f2",
                 "width": 75,
-                "border": {
-                    "top": false,
-                    "right": false,
-                    "bottom": false,
-                    "left": false
-                }
             },
             "folder": {
                 "foreground_color": "#f0f1f2",
-                "border": {
-                    "top": false,
-                    "right": false,
-                    "bottom": false,
-                    "left": false
-                }
             },
             "current_path": {
                 "foreground_color": "#cf34c7",
@@ -56,40 +44,16 @@
                     2
                 ],
                 "bold": true,
-                "border": {
-                    "top": false,
-                    "right": false,
-                    "bottom": false,
-                    "left": false
-                }
             },
             "mode_style": {
                 "foreground_color": "#cf3443",
-                "border": {
-                    "top": false,
-                    "right": false,
-                    "bottom": false,
-                    "left": false
-                }
             },
             "size_style": {
                 "foreground_color": "#3460cf",
-                "border": {
-                    "top": false,
-                    "right": false,
-                    "bottom": false,
-                    "left": false
-                }
             },
             "selected": {
                 "foreground_color": "#000000",
-                "background_color": "#c7c8c9",
-                "border": {
-                    "top": false,
-                    "right": false,
-                    "bottom": false,
-                    "left": false
-                }
+                "background_color": "#c7c8c9"
             }
         }
     }

@@ -20,7 +20,6 @@ type KeyBinds struct {
 	Up              key.Binding
 	Down            key.Binding
 	Back            key.Binding
-	CmdMode         key.Binding
 	CancelSelection key.Binding
 	SelectMode      key.Binding
 	SelectOne       key.Binding
@@ -96,7 +95,6 @@ func CustomKeybinds(c config.FilePickerKeybinds) KeyBinds {
 		Up:              key.NewBinding(key.WithKeys(c.Up...)),
 		Down:            key.NewBinding(key.WithKeys(c.Down...)),
 		Back:            key.NewBinding(key.WithKeys(c.Back...)),
-		CmdMode:         key.NewBinding(key.WithKeys(":", "/")),
 		SelectMode:      key.NewBinding(key.WithKeys(c.SelectMode...)),
 		SelectOne:       key.NewBinding(key.WithKeys(c.SelectOne...)),
 		CancelSelection: key.NewBinding(key.WithKeys("esc")),
