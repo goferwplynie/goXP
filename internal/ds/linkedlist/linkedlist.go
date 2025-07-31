@@ -73,7 +73,7 @@ func (ll *LinkedList[T]) GetByIndex(index int) (value T, err error) {
 	}
 
 	currentNode := ll.Head
-	for i := 0; i < index; i++ {
+	for i := range index {
 		if index-i > 0 && currentNode.Next == nil {
 			var zeroValue T
 			return zeroValue, errors.New("index out of range")
